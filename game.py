@@ -2,10 +2,13 @@ import numpy as np
 import random
 
 class Game2048:
-    def __init__(self):
-        self.grid = np.zeros((4, 4), dtype=int)
-        self.add_number()
-        self.add_number()
+    def __init__(self, grid=None):
+        if grid is None:
+            self.grid = np.zeros((4, 4), dtype=int)
+            self.add_number()
+            self.add_number()
+        else:
+            self.grid = grid
 
     def add_number(self):
         available_positions = list(zip(*np.where(self.grid == 0)))
@@ -59,6 +62,20 @@ class Game2048:
         self.move_right()
         self.grid = self.grid.T
 
+    def get_possible_moves(self):
+        possible_moves = []
+        for direction in ['l', 'r', 'u', 'd']:
+            if self.move_possible(direction):
+                possible_moves.append(direction)
+        return possible_moves
+
+    def move_possible(self, direction):
+        temp_grid = self.grid.copy()
+        self.move(direction)
+        is_possible = not np.array_equal(temp_grid, self.grid)
+        self.grid = temp_grid
+        return is_possible
+
     def game_over(self):
         if 0 in self.grid:
             return False
@@ -73,6 +90,9 @@ class Game2048:
 
     def display(self):
         print(self.grid)
+
+    def get_score(self):
+        return np.sum(self.grid)
 
     def play(self, player):
         if player == 'query_player':
@@ -99,5 +119,5 @@ def simple_random_agent(grid):
     moves = ['l', 'r', 'u', 'd']
     return random.choice(moves)
 
-game = Game2048()
-game.play(simple_random_agent)
+# game = Game2048()
+# game.play(simple_random_agent)
