@@ -39,5 +39,5 @@ def dfs_agent(grid):
     agent = DFS_Agent()
     return agent.get_move(grid)
 
-game = Game2048()
-game.play(dfs_agent)
+# game = Game2048()
+# game.play(dfs_agent)

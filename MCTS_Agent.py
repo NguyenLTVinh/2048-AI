@@ -72,5 +72,5 @@ def mcts_agent(grid):
     agent = MCTSAgent()
     return agent.get_move(game_instance)
 
-game = Game2048()
-game.play(mcts_agent)
+# game = Game2048()
+# game.play(mcts_agent)
