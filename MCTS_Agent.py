@@ -1,29 +1,29 @@
 import numpy as np
 import random
 from game import Game2048
-from copy import deepcopy
+from math import log, sqrt
 
 class MCTSNode:
     def __init__(self, game, parent=None, move=None):
-        self.game = deepcopy(game)
-        if move is not None:
-            self.game.move(move)
+        self.game = game
         self.parent = parent
         self.move = move
         self.wins = 0
         self.visits = 0
         self.children = []
         self.untried_moves = game.get_possible_moves()
+        if move is not None:
+            self.game.move(move, add_new=False)  # Make move without adding a new number
 
     def select_child(self):
         # UCB1 formula
-        from math import log, sqrt
         log_total_visits = log(self.visits)
         return max(self.children, key=lambda child: child.wins / child.visits + sqrt(2 * log_total_visits / child.visits))
 
     def expand(self):
         move = self.untried_moves.pop()
-        child = MCTSNode(self.game, parent=self, move=move)
+        new_game = Game2048(self.game.grid.copy())
+        child = MCTSNode(new_game, parent=self, move=move)
         self.children.append(child)
         return child
 
@@ -32,19 +32,31 @@ class MCTSNode:
         self.wins += result
 
     def simulate(self):
-        temp_game = deepcopy(self.game)
-        while not temp_game.game_over():
-            possible_moves = temp_game.get_possible_moves()
-            move = random.choice(possible_moves)
-            temp_game.move(move)
-        return temp_game.get_score()
+        simulation_game = Game2048(self.game.grid.copy())
+        while not simulation_game.game_over():
+            possible_moves = simulation_game.get_possible_moves()
+            move = self.choose_heuristic_move(simulation_game, possible_moves)
+            simulation_game.move(move, add_new=True)
+        return simulation_game.get_score()
+
+    def choose_heuristic_move(self, game, possible_moves):
+        best_move = None
+        best_score = -1
+        for move in possible_moves:
+            game_copy = Game2048(game.grid.copy())
+            game_copy.move(move, add_new=False)
+            score = game_copy.get_score()
+            if score > best_score:
+                best_score = score
+                best_move = move
+        return best_move
 
 class MCTSAgent:
     def __init__(self, iterations=100):
         self.iterations = iterations
 
     def get_move(self, game):
-        root = MCTSNode(game)
+        root = MCTSNode(Game2048(game.grid.copy()))
 
         for _ in range(self.iterations):
             node = root
@@ -64,7 +76,6 @@ class MCTSAgent:
                 node.update(score)
                 node = node.parent
 
-        # Return the move of the child with the highest score
         return max(root.children, key=lambda c: c.visits).move
 
 def mcts_agent(grid):

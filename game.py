@@ -9,6 +9,7 @@ class Game2048:
             self.add_number()
         else:
             self.grid = grid
+        self.history = []
 
     def add_number(self):
         available_positions = list(zip(*np.where(self.grid == 0)))
@@ -16,8 +17,8 @@ class Game2048:
             row, col = random.choice(available_positions)
             self.grid[row, col] = random.choice([2, 4])
 
-    def move(self, direction):
-        original_grid = self.grid.copy()
+    def move(self, direction, add_new=True):
+        self.history.append(np.copy(self.grid))
         if direction == 'l':
             self.move_left()
         elif direction == 'r':
@@ -26,9 +27,13 @@ class Game2048:
             self.move_up()
         elif direction == 'd':
             self.move_down()
-        
-        if not np.array_equal(original_grid, self.grid):
+
+        if add_new and not np.array_equal(self.history[-1], self.grid):
             self.add_number()
+    
+    def undo_move(self):
+        if self.history:
+            self.grid = self.history.pop()
 
     def compress(self, row):
         new_row = [i for i in row if i != 0]
@@ -63,11 +68,13 @@ class Game2048:
         self.grid = self.grid.T
 
     def get_possible_moves(self):
-        possible_moves = []
+        moves = []
         for direction in ['l', 'r', 'u', 'd']:
-            if self.move_possible(direction):
-                possible_moves.append(direction)
-        return possible_moves
+            self.move(direction, add_new=False)
+            if not np.array_equal(self.history[-1], self.grid):
+                moves.append(direction)
+            self.undo_move()
+        return moves
 
     def move_possible(self, direction):
         temp_grid = self.grid.copy()
