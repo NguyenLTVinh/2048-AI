@@ -1,5 +1,5 @@
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 from game import Game2048
 from DFS_Agent import dfs_agent
 from MCTS_Agent import mcts_agent
@@ -7,7 +7,7 @@ from game import simple_random_agent
 import csv
 import time
 
-def simulate_game(agent, csv_name, num_simulations=250):
+def simulate_game(agent, csv_name, num_simulations=500):
     with open(csv_name, mode='w', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(["Run Number", "Score", "Move Count", "Max Tile", "Win"])
@@ -44,36 +44,36 @@ def simulate_game(agent, csv_name, num_simulations=250):
         "max_tile_distribution": np.unique(max_tiles, return_counts=True)
     }
 
-def plot_results(results, agents):
-    fig, axs = plt.subplots(2, 2, figsize=(10, 10))
-    fig.suptitle("2048 Game AI Agent Evaluation")
+# def plot_results(results, agents):
+#     fig, axs = plt.subplots(2, 2, figsize=(10, 10))
+#     fig.suptitle("2048 Game AI Agent Evaluation")
 
-    # Plot average scores
-    scores = [result["average_score"] for result in results]
-    axs[0, 0].bar(agents, scores)
-    axs[0, 0].set_title("Average Score")
+#     # Plot average scores
+#     scores = [result["average_score"] for result in results]
+#     axs[0, 0].bar(agents, scores)
+#     axs[0, 0].set_title("Average Score")
 
-    # Plot win rates
-    win_rates = [result["win_rate"] for result in results]
-    axs[0, 1].bar(agents, win_rates)
-    axs[0, 1].set_title("Win Rate")
+#     # Plot win rates
+#     win_rates = [result["win_rate"] for result in results]
+#     axs[0, 1].bar(agents, win_rates)
+#     axs[0, 1].set_title("Win Rate")
 
-    # Plot average moves
-    moves = [result["average_moves"] for result in results]
-    axs[1, 0].bar(agents, moves)
-    axs[1, 0].set_title("Average Moves Per Game")
+#     # Plot average moves
+#     moves = [result["average_moves"] for result in results]
+#     axs[1, 0].bar(agents, moves)
+#     axs[1, 0].set_title("Average Moves Per Game")
 
-    # Plot max tile distributions
-    colors = ['green', 'red', 'blue']
-    for idx, result in enumerate(results):
-        tiles, counts = result["max_tile_distribution"]
-        axs[1, 1].bar(tiles + 0.2 * (idx - 1), counts, width=0.2, label=f"{agents[idx]}", color=colors[idx])
-    axs[1, 1].set_title("Max Tile Distribution")
-    axs[1, 1].legend()
+#     # Plot max tile distributions
+#     colors = ['green', 'red', 'blue']
+#     for idx, result in enumerate(results):
+#         tiles, counts = result["max_tile_distribution"]
+#         axs[1, 1].bar(tiles + 0.2 * (idx - 1), counts, width=0.2, label=f"{agents[idx]}", color=colors[idx])
+#     axs[1, 1].set_title("Max Tile Distribution")
+#     axs[1, 1].legend()
 
-    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-    plt.savefig("2048_AI_Evaluation.png")
-    plt.close()
+#     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+#     plt.savefig("2048_AI_Evaluation.png")
+#     plt.close()
 
 def main():
     runtimes = []
