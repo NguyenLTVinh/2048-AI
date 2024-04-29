@@ -2,6 +2,7 @@ import pandas as pd
 import glob
 import scipy.stats as stats
 import os
+import matplotlib.pyplot as plt
 
 def add_algorithm_column(file_path):
     df = pd.read_csv(file_path)
@@ -37,3 +38,21 @@ if 'DFS_Agent' in combined_csv['algorithm'].unique() and 'MCTS_Agent' in combine
 
 print("\nMeans for 'Score':\n", mean_values)
 print("\nStandard Deviations for 'Score':\n", std_dev_values)
+
+# Plotting the maximum tile distribution
+tile_distribution.plot(kind='bar', stacked=True, figsize=(10, 6))
+plt.title('Maximum Tile Distribution')
+plt.xlabel('Algorithm')
+plt.ylabel('Frequency')
+plt.legend(title='Max Tile Bin', bbox_to_anchor=(1.05, 1), loc='upper left')
+plt.tight_layout()
+plt.show()
+plt.savefig('max_tile_distribution.png')
+
+# Plotting the score distribution
+combined_csv.hist(column='Score', by='algorithm', bins=50, figsize=(10, 6))
+plt.suptitle('Score Distribution')
+plt.xlabel('Score')
+plt.ylabel('Frequency')
+plt.show()
+plt.savefig('score_distribution.png')
